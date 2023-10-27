@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>슬라이딩 타일 퍼즐</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+}
+
+#puzzle-container {
+    max-width: 300px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#puzzle-board {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-gap: 5px;
+}
+
+.tile {
+    width: 80px;
+    height: 80px;
+    background-color: #3498db;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tile:hover {
+    background-color: #2980b9;
+}
+</style>
+</head>
+<body>
+    <div id="puzzle-container">
+        <h1>슬라이딩 타일 퍼즐</h1>
+        <div id="puzzle-board">
+            <!-- 타일이 생성될 공간 -->
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    const board = $("#puzzle-board");
+
+    const size = 3;
+    const totalTiles = size * size;
+    const tiles = Array.from({ length: totalTiles }, (_, i) => i + 1);
+
+    // 1x3 번째 칸에 7을 고정
+    tiles[2] = 7;
+
+    // 빈 칸을 나타내기 위해 null을 사용
+    tiles.push(null);
+
+    // 무작위로 타일을 섞기
+    function shuffleTiles() {
+        for (let i = tiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+        }
+    }
+
+    shuffleTiles();
+
+    function createTile(tileNumber) {
+        const tile = $("<div>").addClass("tile");
+        if (tileNumber !== null) {
+            tile.text(tileNumber);
+        }
+        return tile;
+    }
+
+    function updateBoard() {
+        board.empty();
+        tiles.forEach((tileNumber) => {
+            const tile = createTile(tileNumber);
+            board.append(tile);
+
+            if (tileNumber !== null) {
+                tile.click(function() {
+                    const tileIndex = tiles.indexOf(tileNumber);
+                    const emptyIndex = tiles.indexOf(null);
+
+                    if ((Math.abs(tileIndex - emptyIndex) === 1 && Math.floor(tileIndex / size) === Math.floor(emptyIndex / size)) ||
+                        (Math.abs(tileIndex - emptyIndex) === size)) {
+                        [tiles[tileIndex], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileIndex]];
+                        updateBoard();
+                    }
+                });
+            }
+        });
+    }
+
+    updateBoard();
+});
+
+
+</script>
+</body>
+</html>
